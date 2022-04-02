@@ -2,7 +2,6 @@
 #include <QObject>
 
 #include "mandelbrot_GUI.h"
-#include "ui_mainwindow.h"
 #include "compute.h"
 #include "get_fps.h"
 

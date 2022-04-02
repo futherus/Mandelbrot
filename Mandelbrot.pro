@@ -9,15 +9,17 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    compute.cpp \
-    get_fps.cpp \
-    main.cpp \
-    mandelbrot_GUI.cpp
+    src/compute.cpp \
+    src/get_fps.cpp \
+    src/main.cpp \
+    src/mandelbrot_GUI.cpp
 
 HEADERS += \
-    compute.h \
-    get_fps.h \
-    mandelbrot_GUI.h
+    src/compute.h \
+    src/get_fps.h \
+    src/mandelbrot_GUI.h
+
+DESTDIR = ../bin
 
 QMAKE_CXXFLAGS = -mavx -mavx2 -O3
 

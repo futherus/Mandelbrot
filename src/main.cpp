@@ -2,7 +2,6 @@
 #include <QApplication>
 #include <QtWidgets>
 
-//#include "imagewidget_GUI.h"
 #include "mandelbrot_GUI.h"
 
 int main(int argc, char *argv[])
