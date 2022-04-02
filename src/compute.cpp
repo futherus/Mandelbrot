@@ -15,9 +15,9 @@ union Color
 {
         struct Bytes
         {
-                char r;
-                char g;
                 char b;
+                char g;
+                char r;
                 char a;
         } bytes;
         
