@@ -15,6 +15,11 @@ MandelbrotWidget::MandelbrotWidget(QWidget *parent)
 {
     enableAVX = true;
 
+    fps_lbl = new QLabel(this);
+    fps_lbl->setMinimumWidth(120);
+    fps_lbl->setMargin(3);
+    fps_lbl->setStyleSheet("QLabel { color : red; font-weight : bold }");
+
     raw_img.resize(4 * width() * height());
 
     fractal_center = QPointF(0, 0);
@@ -33,7 +38,9 @@ void MandelbrotWidget::paintEvent(QPaintEvent*)
     qDebug() << "Painting. size(raw_img) = " << raw_img.size()
              << "fractal center" << fractal_center << "fractal size" << fractal_size;
 
-    qDebug() << "AVX" << enableAVX << "FPS:" <<  get_fps();
+    int fps = get_fps();
+    qDebug() << "AVX" << enableAVX << "FPS:" <<  fps;
+    fps_lbl->setText("FPS: " + QString::number(fps));
     mandelbrot((uint32_t*) raw_img.data(), enableAVX,
                      fractal_center.x() - fractal_size.width()  / 2,
                      fractal_center.y() - fractal_size.height() / 2,

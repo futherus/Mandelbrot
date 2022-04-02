@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <math.h>
 #include <assert.h>
 #include <immintrin.h>
 
@@ -7,8 +8,21 @@
 const int    ITER_MAX = 256;
 const double R2_MAX   = 100.0;
 
-const uint32_t COLOR = 0xFFFFFFFF;
-const uint32_t BACKGROUND = 0x0;
+const uint32_t BLACK =  0;
+const uint32_t WHITE = -1;
+
+union Color
+{
+        struct Bytes
+        {
+                char r;
+                char g;
+                char b;
+                char a;
+        } bytes;
+        
+        uint32_t col;
+};
 
 static void mandelbrot_noAVX(uint32_t* dst,
                       const double tl_x, const double tl_y,
@@ -68,7 +82,7 @@ static void mandelbrot_noAVX(uint32_t* dst,
                                 y = y_0 + 2 * xy;
                         }
 
-                        dst[iy * width + ix] = (iter & 0x1) ? COLOR : BACKGROUND;
+                        dst[iy * width + ix] = (iter & 0x1) ? WHITE : BLACK;
 
                         x_0 += dx;
                 }
@@ -130,7 +144,7 @@ static void mandelbrot_AVX(uint32_t* dst,
                                 if(!mask)
                                         break;
 
-                                // avx_iter    = (avx_iter_4 - cmp_4       | avx_iter_3 - cmp_3       | avx_iter_2 - cmp_2       | avx_iter_1 - cmp_1      )
+                                // avx_iter    = (iter_4 - cmp_4 | iter_3 - cmp_3 | iter_2 - cmp_2 | iter_1 - cmp_1)
                                 avx_iter       = _mm256_sub_epi64(avx_iter, _mm256_castpd_si256(cmp));
 
                                 __m256d avx_xy = _mm256_mul_pd(avx_x, avx_y);
@@ -145,8 +159,14 @@ static void mandelbrot_AVX(uint32_t* dst,
                         {
                                 // *ptr_iter       = (iter_1 | iter_2 | iter_3 | iter_4)
                                 uint64_t* ptr_iter = (uint64_t*) &avx_iter;
-                                
-                                dst[iy * width + ix + i] = (ptr_iter[i] & 0x1) ? COLOR : BACKGROUND;
+
+                                double iters = ptr_iter[i];
+                                //            blue green red alpha
+                                Color color = {(char) (iters * iters), (char) iters, (char) iters, 0};
+                                if(ptr_iter[i] >= ITER_MAX)
+                                        color.col = BLACK;
+
+                                dst[iy * width + ix + i] = color.col;
                         }
 
                         x_0 += 4 * dx;
